@@ -6,7 +6,7 @@
         <TargetFrameworks>net6.0;net5.0;netstandard2.1;netstandard2.0;net462;netcoreapp3.1;</TargetFrameworks>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AssemblyName>EFCoreSecondLevelCacheInterceptor</AssemblyName>
-        <PackageId>EFCoreSecondLevelCacheInterceptor</PackageId>
+        <PackageId>EFCoreSecondLevelCacheInterceptor.Venki</PackageId>
         <PackageTags>EntityFramework;Cache;Caching;SecondLevelCache;EFCore;ORM;.NET Core;aspnetcore</PackageTags>
         <PackageProjectUrl>https://github.com/VahidN/EFCoreSecondLevelCacheInterceptor</PackageProjectUrl>
         <RepositoryUrl>https://github.com/VahidN/EFCoreSecondLevelCacheInterceptor</RepositoryUrl>
