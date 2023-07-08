@@ -17,10 +17,10 @@ public interface IEFCacheDependenciesProcessor
     /// <summary>
     ///     Finds the related table names of the current query.
     /// </summary>
-    SortedSet<string> GetCacheDependencies(EFCachePolicy cachePolicy, SortedSet<string> tableNames, string commandText);
+    SortedSet<string> GetCacheDependencies(EFCachePolicy cachePolicy, SortedSet<string> tableNames, string commandText, DbContext context);
 
     /// <summary>
     ///     Invalidates all of the cache entries which are dependent on any of the specified root keys.
     /// </summary>
-    bool InvalidateCacheDependencies(string commandText, EFCacheKey cacheKey);
+    bool InvalidateCacheDependencies(string commandText, EFCacheKey cacheKey, DbContext context);
 }

@@ -58,14 +58,14 @@ public class EFCacheDependenciesProcessor : IEFCacheDependenciesProcessor
         var tableNames = new SortedSet<string>(
                                                _sqlCommandsProcessor.GetAllTableNames(context).Select(x => x.TableName),
                                                StringComparer.OrdinalIgnoreCase);
-        return GetCacheDependencies(cachePolicy, tableNames, command.CommandText);
+        return GetCacheDependencies(cachePolicy, tableNames, command.CommandText, context);
     }
 
     /// <summary>
     ///     Finds the related table names of the current query.
     /// </summary>
     public SortedSet<string> GetCacheDependencies(EFCachePolicy cachePolicy, SortedSet<string> tableNames,
-                                                  string commandText)
+                                                  string commandText, DbContext context)
     {
         if (cachePolicy == null)
         {
@@ -80,7 +80,7 @@ public class EFCacheDependenciesProcessor : IEFCacheDependenciesProcessor
         if (cacheDependencies.Count != 0)
         {
             logProcess(tableNames, textsInsideSquareBrackets, cacheDependencies);
-            return PrefixCacheDependencies(cacheDependencies);
+            return PrefixCacheDependencies(cacheDependencies, context);
         }
 
         cacheDependencies = cachePolicy.CacheItemsDependencies as SortedSet<string>;
@@ -100,13 +100,13 @@ public class EFCacheDependenciesProcessor : IEFCacheDependenciesProcessor
         }
 
         logProcess(tableNames, textsInsideSquareBrackets, cacheDependencies);
-        return PrefixCacheDependencies(cacheDependencies);
+        return PrefixCacheDependencies(cacheDependencies, context);
     }
 
     /// <summary>
     ///     Invalidates all of the cache entries which are dependent on any of the specified root keys.
     /// </summary>
-    public bool InvalidateCacheDependencies(string commandText, EFCacheKey cacheKey)
+    public bool InvalidateCacheDependencies(string commandText, EFCacheKey cacheKey, DbContext context)
     {
         if (cacheKey is null)
         {
@@ -136,7 +136,7 @@ public class EFCacheDependenciesProcessor : IEFCacheDependenciesProcessor
             return false;
         }
 
-        var cacheKeyPrefix = _cacheKeyPrefixProvider.GetCacheKeyPrefix();
+        var cacheKeyPrefix = _cacheKeyPrefixProvider.GetCacheKeyPrefix(context);
         cacheKey.CacheDependencies.Add($"{cacheKeyPrefix}{EFCachePolicy.UnknownsCacheDependency}");
         _cacheServiceProvider.InvalidateCacheDependencies(cacheKey);
 
@@ -167,14 +167,14 @@ public class EFCacheDependenciesProcessor : IEFCacheDependenciesProcessor
         _cacheSettings.SkipCacheInvalidationCommands != null &&
         _cacheSettings.SkipCacheInvalidationCommands(commandText);
 
-    private SortedSet<string> PrefixCacheDependencies(SortedSet<string>? cacheDependencies)
+    private SortedSet<string> PrefixCacheDependencies(SortedSet<string>? cacheDependencies, DbContext context)
     {
         if (cacheDependencies is null)
         {
             return new SortedSet<string>(StringComparer.Ordinal);
         }
 
-        var cacheKeyPrefix = _cacheKeyPrefixProvider.GetCacheKeyPrefix();
+        var cacheKeyPrefix = _cacheKeyPrefixProvider.GetCacheKeyPrefix(context);
         return new SortedSet<string>(cacheDependencies.Select(x => $"{cacheKeyPrefix}{x}"),
                                      StringComparer.OrdinalIgnoreCase);
     }

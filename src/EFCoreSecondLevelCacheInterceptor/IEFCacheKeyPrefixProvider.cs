@@ -1,4 +1,6 @@
-﻿namespace EFCoreSecondLevelCacheInterceptor;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace EFCoreSecondLevelCacheInterceptor;
 
 /// <summary>
 ///     A custom cache key prefix provider for EF queries.
@@ -8,5 +10,5 @@ public interface IEFCacheKeyPrefixProvider
     /// <summary>
     ///     returns the current provided cache key prefix
     /// </summary>
-    string GetCacheKeyPrefix();
+    string GetCacheKeyPrefix(DbContext context);
 }

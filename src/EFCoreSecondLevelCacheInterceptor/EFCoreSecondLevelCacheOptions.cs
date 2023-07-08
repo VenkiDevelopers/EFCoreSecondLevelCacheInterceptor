@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreSecondLevelCacheInterceptor;
 
@@ -280,7 +281,7 @@ public class EFCoreSecondLevelCacheOptions
     ///     <![CDATA[ Such as: serviceProvider => "EF_" + serviceProvider.GetRequiredService<IHttpContextAccesor>().HttpContext.Request.Headers["tenant-id"] ]]>
     /// </param>
     /// <returns>EFCoreSecondLevelCacheOptions.</returns>
-    public EFCoreSecondLevelCacheOptions UseCacheKeyPrefix(Func<IServiceProvider, string>? prefix)
+    public EFCoreSecondLevelCacheOptions UseCacheKeyPrefix(Func<IServiceProvider, DbContext, string>? prefix)
     {
         Settings.CacheKeyPrefixSelector = prefix;
         return this;

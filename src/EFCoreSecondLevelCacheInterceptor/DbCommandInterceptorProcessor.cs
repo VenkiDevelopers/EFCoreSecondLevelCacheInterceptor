@@ -81,7 +81,7 @@ public class DbCommandInterceptorProcessor : IDbCommandInterceptorProcessor
 
         var commandText = command.CommandText;
         var efCacheKey = _cacheKeyProvider.GetEFCacheKey(command, context, cachePolicy ?? new EFCachePolicy());
-        if (_cacheDependenciesProcessor.InvalidateCacheDependencies(commandText, efCacheKey))
+        if (_cacheDependenciesProcessor.InvalidateCacheDependencies(commandText, efCacheKey, context))
         {
             return result;
         }

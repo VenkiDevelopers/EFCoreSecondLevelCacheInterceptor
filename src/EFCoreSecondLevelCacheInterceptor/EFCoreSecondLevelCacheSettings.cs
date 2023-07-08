@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreSecondLevelCacheInterceptor;
 
@@ -44,7 +45,7 @@ public class EFCoreSecondLevelCacheSettings
     ///     Gets or sets a dynamic cache key prefix.
     /// </summary>
     /// <value>The cache key prefix.</value>
-    public Func<IServiceProvider, string>? CacheKeyPrefixSelector { get; set; }
+    public Func<IServiceProvider, DbContext, string>? CacheKeyPrefixSelector { get; set; }
 
     /// <summary>
     ///     CacheAllQueries Options

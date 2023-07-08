@@ -64,7 +64,7 @@ public class EFCacheKeyProvider : IEFCacheKeyProvider
         }
 
         var cacheKey = getCacheKey(command, cachePolicy.CacheSaltKey);
-        var cacheKeyPrefix = _cacheKeyPrefixProvider.GetCacheKeyPrefix();
+        var cacheKeyPrefix = _cacheKeyPrefixProvider.GetCacheKeyPrefix(context);
         var cacheKeyHash =
             !string.IsNullOrEmpty(cacheKeyPrefix)
                 ? $"{cacheKeyPrefix}{_hashProvider.ComputeHash(cacheKey):X}"

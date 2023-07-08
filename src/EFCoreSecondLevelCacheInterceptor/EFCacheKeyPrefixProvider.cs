@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace EFCoreSecondLevelCacheInterceptor;
@@ -29,7 +30,7 @@ public class EFCacheKeyPrefixProvider : IEFCacheKeyPrefixProvider
     /// <summary>
     ///     returns the current provided cache key prefix
     /// </summary>
-    public string GetCacheKeyPrefix() => _cacheSettings.CacheKeyPrefixSelector is not null
-                                             ? _cacheSettings.CacheKeyPrefixSelector(_serviceProvider)
+    public string GetCacheKeyPrefix(DbContext context) => _cacheSettings.CacheKeyPrefixSelector is not null
+                                             ? _cacheSettings.CacheKeyPrefixSelector(_serviceProvider, context)
                                              : _cacheSettings.CacheKeyPrefix;
 }
