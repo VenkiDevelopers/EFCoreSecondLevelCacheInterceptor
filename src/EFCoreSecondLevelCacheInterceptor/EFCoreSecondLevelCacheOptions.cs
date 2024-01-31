@@ -311,6 +311,16 @@ public class EFCoreSecondLevelCacheOptions
     }
 
     /// <summary>
+    ///     Fallback on db if the caching provider (redis) is down.
+    /// </summary>
+    public EFCoreSecondLevelCacheOptions UseDbCallsIfCachingProviderIsDown(TimeSpan nextAvailabilityCheck)
+    {
+        Settings.UseDbCallsIfCachingProviderIsDown = true;
+        Settings.NextCacheServerAvailabilityCheck = nextAvailabilityCheck;
+        return this;
+    }
+
+    /// <summary>
     ///     Possibility to allow caching with explicit transactions.
     ///     Its default value is false.
     /// </summary>
@@ -363,7 +373,9 @@ public class EFCoreSecondLevelCacheOptions
     ///     Table names are not case sensitive.
     /// </param>
     public EFCoreSecondLevelCacheOptions CacheAllQueriesExceptContainingTableNames(
-        CacheExpirationMode expirationMode, TimeSpan timeout, params string[] realTableNames)
+        CacheExpirationMode expirationMode,
+        TimeSpan timeout,
+        params string[] realTableNames)
     {
         Settings.SkipCacheSpecificQueriesOptions = new SkipCacheSpecificQueriesOptions(null)
                                                    {
@@ -384,7 +396,9 @@ public class EFCoreSecondLevelCacheOptions
     /// <param name="timeout">The expiration timeout.</param>
     /// <param name="entityTypes">The real entity types. Queries containing these types will not be cached.</param>
     public EFCoreSecondLevelCacheOptions CacheAllQueriesExceptContainingTypes(
-        CacheExpirationMode expirationMode, TimeSpan timeout, params Type[] entityTypes)
+        CacheExpirationMode expirationMode,
+        TimeSpan timeout,
+        params Type[] entityTypes)
     {
         Settings.SkipCacheSpecificQueriesOptions = new SkipCacheSpecificQueriesOptions(entityTypes)
                                                    {
