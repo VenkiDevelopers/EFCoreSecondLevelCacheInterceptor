@@ -58,7 +58,6 @@ public class EFTableRowsDataReader : DbDataReader
     /// </summary>
     public override int RecordsAffected => -1;
 
-
     /// <summary>
     ///     The TableName's unique ID.
     /// </summary>
@@ -77,37 +76,44 @@ public class EFTableRowsDataReader : DbDataReader
     /// <summary>
     ///     Gets a string representing the data type of the specified column.
     /// </summary>
-    public override string GetDataTypeName(int ordinal) => _tableRows.GetDataTypeName(ordinal);
+    public override string GetDataTypeName(int ordinal)
+        => _tableRows.GetDataTypeName(ordinal);
 
     /// <summary>
     ///     Gets the Type that is the data type of the object.
     /// </summary>
-    public override Type GetFieldType(int ordinal) => _tableRows.GetFieldType(ordinal);
+    public override Type GetFieldType(int ordinal)
+        => _tableRows.GetFieldType(ordinal);
 
     /// <summary>
     ///     Gets the name of the specified column.
     /// </summary>
-    public override string GetName(int ordinal) => _tableRows.GetName(ordinal);
+    public override string GetName(int ordinal)
+        => _tableRows.GetName(ordinal);
 
     /// <summary>
     ///     Gets the column ordinal, given the name of the column.
     /// </summary>
-    public override int GetOrdinal(string name) => _tableRows.GetOrdinal(name);
+    public override int GetOrdinal(string name)
+        => _tableRows.GetOrdinal(name);
 
     /// <summary>
     ///     Returns a DataTable that describes the column metadata of the SqlDataReader.
     /// </summary>
-    public override DataTable GetSchemaTable() => throw new InvalidOperationException();
+    public override DataTable GetSchemaTable()
+        => throw new InvalidOperationException();
 
     /// <summary>
     ///     Advances the data reader to the next result, when reading the results of batch Transact-SQL statements.
     /// </summary>
-    public override bool NextResult() => false;
+    public override bool NextResult()
+        => false;
 
     /// <summary>
     ///     Closes the SqlDataReader object.
     /// </summary>
-    public override void Close() => _isClosed = true;
+    public override void Close()
+        => _isClosed = true;
 
     /// <summary>
     ///     Advances the SqlDataReader to the next record.
@@ -120,6 +126,7 @@ public class EFTableRowsDataReader : DbDataReader
         }
 
         _rowValues = _tableRows.Get(_currentRow++).Values;
+
         return true;
     }
 
@@ -129,12 +136,14 @@ public class EFTableRowsDataReader : DbDataReader
     public override bool GetBoolean(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.LongType)
         {
             return (long)value != 0;
@@ -150,7 +159,7 @@ public class EFTableRowsDataReader : DbDataReader
             return (ulong)Convert.ChangeType(value, TypeExtensions.UlongTYpe, CultureInfo.InvariantCulture) != 0;
         }
 
-        return (bool)value;
+        return Convert.ToBoolean(value, CultureInfo.InvariantCulture);
     }
 
     private Type GetOrdinalValueType(int ordinal, object value)
@@ -162,6 +171,7 @@ public class EFTableRowsDataReader : DbDataReader
 
         valueType = value.GetType();
         _valueTypes.Add(ordinal, valueType);
+
         return valueType;
     }
 
@@ -171,12 +181,14 @@ public class EFTableRowsDataReader : DbDataReader
     public override byte GetByte(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.BoolType)
         {
             return (bool)value ? (byte)1 : (byte)0;
@@ -192,14 +204,15 @@ public class EFTableRowsDataReader : DbDataReader
             return (byte)Convert.ChangeType(value, TypeExtensions.ByteType, CultureInfo.InvariantCulture);
         }
 
-        return (byte)value;
+        return Convert.ToByte(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
     ///     Reads a stream of bytes from the specified column offset into the buffer an array starting at the given buffer
     ///     offset.
     /// </summary>
-    public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length) => 0L;
+    public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
+        => 0L;
 
     /// <summary>
     ///     Gets the value of the specified column as a single character.
@@ -207,15 +220,18 @@ public class EFTableRowsDataReader : DbDataReader
     public override char GetChar(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.StringType)
         {
             var val = value.ToString();
+
             if (string.IsNullOrWhiteSpace(val))
             {
                 return default;
@@ -229,14 +245,15 @@ public class EFTableRowsDataReader : DbDataReader
             return checked((char)GetInt64(ordinal));
         }
 
-        return (char)value;
+        return Convert.ToChar(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
     ///     Reads a stream of characters from the specified column offset into the buffer as an array starting at the given
     ///     buffer offset.
     /// </summary>
-    public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length) => 0L;
+    public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
+        => 0L;
 
     /// <summary>
     ///     Gets the value of the specified column as a DateTime object.
@@ -244,18 +261,19 @@ public class EFTableRowsDataReader : DbDataReader
     public override DateTime GetDateTime(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType != TypeExtensions.DateTimeType)
         {
             var s = value.ToString();
-            return string.IsNullOrWhiteSpace(s)
-                       ? default
-                       : DateTime.Parse(s, CultureInfo.CurrentCulture);
+
+            return string.IsNullOrWhiteSpace(s) ? default : DateTime.Parse(s, CultureInfo.InvariantCulture);
         }
 
         return (DateTime)value;
@@ -267,20 +285,21 @@ public class EFTableRowsDataReader : DbDataReader
     public override decimal GetDecimal(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.StringType)
         {
             var s = value.ToString();
+
             return string.IsNullOrWhiteSpace(s)
-                       ? default
-                       : decimal.Parse(s,
-                                       NumberStyles.Number | NumberStyles.AllowExponent,
-                                       CultureInfo.InvariantCulture);
+                ? default
+                : decimal.Parse(s, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
         }
 
         if (valueType != TypeExtensions.DecimalType)
@@ -288,7 +307,7 @@ public class EFTableRowsDataReader : DbDataReader
             return (decimal)Convert.ChangeType(value, TypeExtensions.DecimalType, CultureInfo.InvariantCulture);
         }
 
-        return (decimal)value;
+        return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -297,24 +316,27 @@ public class EFTableRowsDataReader : DbDataReader
     public override double GetDouble(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType != TypeExtensions.DoubleType)
         {
             return (double)Convert.ChangeType(value, TypeExtensions.DoubleType, CultureInfo.InvariantCulture);
         }
 
-        return (double)value;
+        return Convert.ToDouble(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
     ///     Returns an IEnumerator that iterates through the SqlDataReader.
     /// </summary>
-    public override IEnumerator GetEnumerator() => throw new NotSupportedException();
+    public override IEnumerator GetEnumerator()
+        => throw new NotSupportedException();
 
     /// <summary>
     ///     Gets the value of the specified column as a single-precision floating point number.
@@ -322,12 +344,14 @@ public class EFTableRowsDataReader : DbDataReader
     public override float GetFloat(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.DoubleType)
         {
             return (float)(double)value;
@@ -338,7 +362,7 @@ public class EFTableRowsDataReader : DbDataReader
             return (float)Convert.ChangeType(value, TypeExtensions.FloatType, CultureInfo.InvariantCulture);
         }
 
-        return (float)value;
+        return Convert.ToSingle(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -347,15 +371,18 @@ public class EFTableRowsDataReader : DbDataReader
     public override Guid GetGuid(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return Guid.NewGuid();
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.StringType)
         {
             var g = value.ToString();
+
             return string.IsNullOrWhiteSpace(g) ? Guid.NewGuid() : new Guid(g);
         }
 
@@ -373,12 +400,14 @@ public class EFTableRowsDataReader : DbDataReader
     public override short GetInt16(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.BoolType)
         {
             return (bool)value ? (short)1 : (short)0;
@@ -394,7 +423,7 @@ public class EFTableRowsDataReader : DbDataReader
             return (short)Convert.ChangeType(value, TypeExtensions.ShortType, CultureInfo.InvariantCulture);
         }
 
-        return (short)value;
+        return Convert.ToInt16(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -403,12 +432,14 @@ public class EFTableRowsDataReader : DbDataReader
     public override int GetInt32(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.BoolType)
         {
             return (bool)value ? 1 : 0;
@@ -424,7 +455,7 @@ public class EFTableRowsDataReader : DbDataReader
             return (int)Convert.ChangeType(value, TypeExtensions.IntType, CultureInfo.InvariantCulture);
         }
 
-        return (int)value;
+        return Convert.ToInt32(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -433,12 +464,14 @@ public class EFTableRowsDataReader : DbDataReader
     public override long GetInt64(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return default;
         }
 
         var valueType = GetOrdinalValueType(ordinal, value);
+
         if (valueType == TypeExtensions.BoolType)
         {
             return (bool)value ? 1 : 0;
@@ -449,7 +482,7 @@ public class EFTableRowsDataReader : DbDataReader
             return (long)Convert.ChangeType(value, TypeExtensions.LongType, CultureInfo.InvariantCulture);
         }
 
-        return (long)value;
+        return Convert.ToInt64(value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -458,6 +491,7 @@ public class EFTableRowsDataReader : DbDataReader
     public override string GetString(int ordinal)
     {
         var value = GetValue(ordinal);
+
         if (value.IsNull())
         {
             return string.Empty;
@@ -469,8 +503,8 @@ public class EFTableRowsDataReader : DbDataReader
     /// <summary>
     ///     Gets the value of the specified column in its native format.
     /// </summary>
-    public override object GetValue(int ordinal) => _rowValues[ordinal];
-
+    public override object GetValue(int ordinal)
+        => _rowValues[ordinal];
 
     /// <inheritdoc />
     public override T GetFieldValue<T>(int ordinal)
@@ -491,21 +525,23 @@ public class EFTableRowsDataReader : DbDataReader
 
         if (expectedValueType == TypeExtensions.DateTimeOffsetType && actualValueType == TypeExtensions.StringType)
         {
-            return (T)(object)DateTimeOffset.Parse((string)value, CultureInfo.CurrentCulture);
+            return (T)(object)DateTimeOffset.Parse((string)value, CultureInfo.InvariantCulture);
         }
 
         if (expectedValueType == TypeExtensions.TimeSpanType && actualValueType == TypeExtensions.StringType)
         {
-            return (T)(object)TimeSpan.Parse((string)value, CultureInfo.CurrentCulture);
+            return (T)(object)TimeSpan.Parse((string)value, CultureInfo.InvariantCulture);
         }
 
         var isActualValueTypeNumber = TypeExtensions.IsNumber(actualValueType);
+
         if (expectedValueType == TypeExtensions.TimeSpanType && isActualValueTypeNumber)
         {
             return (T)(object)new TimeSpan(Convert.ToInt64(value, CultureInfo.InvariantCulture));
         }
 
         var isExpectedValueTypeNumber = TypeExtensions.IsNumber(expectedValueType);
+
         if (isExpectedValueTypeNumber && isActualValueTypeNumber)
         {
             return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
@@ -560,16 +596,18 @@ public class EFTableRowsDataReader : DbDataReader
     private static T ProcessPostgresArrayOrList<T>(Type expectedValueType, IEnumerable enumerable)
     {
         var elementType = expectedValueType.IsArray
-                              ? expectedValueType.GetElementType()
-                              : expectedValueType.GetGenericArguments()[0];
+            ? expectedValueType.GetElementType()
+            : expectedValueType.GetGenericArguments()[0];
+
         if (elementType is null)
         {
-            throw new
-                InvalidOperationException($"Expected ValueType `{nameof(elementType)}` must be an array or a generic list.");
+            throw new InvalidOperationException(
+                $"Expected ValueType `{nameof(elementType)}` must be an array or a generic list.");
         }
 
         var items = enumerable.OfType<object>().ToArray();
         var array = Array.CreateInstance(elementType, items.Length);
+
         for (var i = 0; i < items.Length; i++)
         {
             array.SetValue(items[i], i);
@@ -582,6 +620,7 @@ public class EFTableRowsDataReader : DbDataReader
 
         var type = typeof(List<>).MakeGenericType(elementType);
         var list = (IList)Activator.CreateInstance(type)!;
+
         foreach (var item in items)
         {
             list.Add(item);
@@ -596,6 +635,7 @@ public class EFTableRowsDataReader : DbDataReader
     public override int GetValues(object[] values)
     {
         Array.Copy(_rowValues.ToArray(), values, _rowValues.Count);
+
         return _rowValues.Count;
     }
 
@@ -605,6 +645,7 @@ public class EFTableRowsDataReader : DbDataReader
     public override bool IsDBNull(int ordinal)
     {
         var value = _rowValues[ordinal];
+
         return value.IsNull();
     }
 }
